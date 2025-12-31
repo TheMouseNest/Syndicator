@@ -1666,9 +1666,10 @@ local function GetTSMGroup(details)
     C_Item.RequestLoadItemDataByID(details.itemID)
     return
   end
-  
+
+  local tsmItemString = TSM_API.ToItemString(details.itemLink)
   -- Ungrouped items return nil, invalid item strings raise an error.
-  local group = TSM_API.GetGroupPathByItem(TSM_API.ToItemString(details.itemLink))
+  local group = tsmItemString and TSM_API.GetGroupPathByItem(tsmItemString)
   details.TSMGroup = group and group:lower() or false
   return details.TSMGroup ~= false
 end
