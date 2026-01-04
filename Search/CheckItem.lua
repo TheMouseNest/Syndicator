@@ -432,6 +432,23 @@ local function CatalystUpgradeCheck(details)
   return select(4, TransmogUpgradeMaster_API.IsAppearanceMissing(details.itemLink)) == true
 end
 
+local function TransmogUpgradeCheck(details)
+  if not TransmogUpgradeMaster_API then
+    return false
+  end
+
+  if not C_Item.IsItemDataCachedByID(details.itemID) then
+    C_Item.RequestLoadItemDataByID(details.itemID)
+    return nil
+  end
+
+  if not TransmogUpgradeMaster_API.IsCacheWarmedUp() then
+    return false, true
+  end
+
+  return select(5, TransmogUpgradeMaster_API.IsAppearanceMissing(details.itemLink)) == true
+end
+
 
 local alwaysMatchClass = {
   ["INVTYPE_CLOAK"] = true,
@@ -1089,6 +1106,7 @@ if addonTable.Constants.IsRetail then
   AddKeywordLocalised("KEYWORD_SET_BONUS", SetBonusCheck, addonTable.Locales.GROUP_ITEM_DETAIL)
   AddKeywordLocalised("KEYWORD_CATALYST", CatalystCheck, addonTable.Locales.GROUP_ITEM_DETAIL)
   AddKeywordLocalised("KEYWORD_CATALYST_UPGRADE", CatalystUpgradeCheck, addonTable.Locales.GROUP_ITEM_DETAIL)
+  AddKeywordLocalised("KEYWORD_TRANSMOG_UPGRADE", TransmogUpgradeCheck, addonTable.Locales.GROUP_ITEM_DETAIL)
   AddKeywordLocalised("KEYWORD_ACTIVE_SEASON", ActiveSeasonCheck, addonTable.Locales.GROUP_ITEM_DETAIL)
   if addonTable.Constants.WarbandBankActive then
     AddKeywordManual(ITEM_ACCOUNTBOUND:lower(), "warbound", BindOnAccountCheck, addonTable.Locales.GROUP_BINDING_TYPE)
