@@ -16,7 +16,7 @@ function addonTable.Search.GetExpansionInfo(itemID)
   if ItemVersion and ItemVersion.API.GetItemVersion then
     local itemVersionDetails = ItemVersion.API.GetItemVersion(itemID, true)
     if itemVersionDetails then
-      return itemVersionDetails.major
+      return itemVersionDetails.expansion.major
     end
   end
   if ATTC and ATTC.SearchForField then
