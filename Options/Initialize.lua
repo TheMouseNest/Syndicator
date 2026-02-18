@@ -45,6 +45,11 @@ local TOOLTIP_OPTIONS = {
   },
   {
     type = "checkbox",
+    text = addonTable.Locales.ALWAYS_SHOW_CURRENT_CHARACTER,
+    option = "always_show_current_character",
+  },
+  {
+    type = "checkbox",
     text = addonTable.Locales.SHOW_RACE_ICONS,
     option = "show_character_race_icons",
   },

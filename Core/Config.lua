@@ -4,6 +4,7 @@ local addonTable = select(2, ...)
 addonTable.Config = {}
 
 addonTable.Config.Options = {
+  ALWAYS_SHOW_CURRENT_CHARACTER = "always_show_current_character",
   SHOW_CHARACTER_RACE_ICONS = "show_character_race_icons",
 
   SHOW_INVENTORY_TOOLTIPS = "show_inventory_tooltips",
@@ -35,6 +36,7 @@ addonTable.Config.Defaults = {
   [addonTable.Config.Options.TOOLTIPS_SORT_BY_NAME] = false,
   [addonTable.Config.Options.TOOLTIPS_FACTION_ONLY] = false,
   [addonTable.Config.Options.TOOLTIPS_CHARACTER_LIMIT] = 4,
+  [addonTable.Config.Options.ALWAYS_SHOW_CURRENT_CHARACTER] = false,
   [addonTable.Config.Options.SHOW_CHARACTER_RACE_ICONS] = true,
   [addonTable.Config.Options.SHOW_BLANK_LINE_BEFORE_INVENTORY] = false,
   [addonTable.Config.Options.SHOW_TOTAL_LINE_AFTER_CHARACTERS] = false,

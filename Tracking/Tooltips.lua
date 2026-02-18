@@ -150,8 +150,19 @@ function addonTable.Tooltips.AddItemLines(tooltip, summaries, itemLink)
     AddDoubleLine(addonTable.Locales.INVENTORY, LINK_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.TOTAL_X:format(WHITE_FONT_COLOR:WrapTextInColorCode(totals))))
   end
 
-  local charactersShown = 0
+  local currentCharacter = UnitName("player")
+  local currentRealm = GetNormalizedRealmName()
+  local charactersToShow = {}
   for _, s in ipairs(tooltipInfo.characters) do
+    if addonTable.Config.Get(addonTable.Config.Options.ALWAYS_SHOW_CURRENT_CHARACTER) and s.character == currentCharacter and s.realmNormalized == currentRealm then
+      table.insert(charactersToShow, 1, s)
+    else
+      table.insert(charactersToShow, s)
+    end
+  end
+
+  local charactersShown = 0
+  for _, s in ipairs(charactersToShow) do
     local entries = {}
     if s.bags > 0 then
       table.insert(entries, addonTable.Locales.BAGS_X:format(WHITE_FONT_COLOR:WrapTextInColorCode(s.bags)))
@@ -268,8 +279,20 @@ function addonTable.Tooltips.AddCurrencyLines(tooltip, currencyID)
   end
 
   tooltip:AddDoubleLine(addonTable.Locales.ALL_CHARACTERS_COLON, WHITE_FONT_COLOR:WrapTextInColorCode(FormatLargeNumber(quantity)))
-  for index = 1, math.min(#summary, addonTable.Config.Get("tooltips_character_limit")) do
-    local s = summary[index]
+
+  local currentCharacter = UnitName("player")
+  local currentRealm = GetNormalizedRealmName()
+  local charactersToShow = {}
+  for _, s in ipairs(summary) do
+    if addonTable.Config.Get(addonTable.Config.Options.ALWAYS_SHOW_CURRENT_CHARACTER) and s.character == currentCharacter and s.realmNormalized == currentRealm then
+      table.insert(charactersToShow, 1, s)
+    else
+      table.insert(charactersToShow, s)
+    end
+  end
+
+  for index = 1, math.min(#charactersToShow, addonTable.Config.Get("tooltips_character_limit")) do
+    local s = charactersToShow[index]
     local character = s.character
     if appendRealm then
       character = character .. "-" .. s.realmNormalized
