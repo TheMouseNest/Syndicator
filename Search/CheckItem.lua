@@ -1630,6 +1630,83 @@ local function ItemLevelRangePatternCheck(details, text)
   return details.itemLevel and details.itemLevel >= tonumber(minText) and details.itemLevel <= tonumber(maxText)
 end
 
+local function CompareWithOperator(op, a, b)
+  if op == "<" then
+    return a < b
+  elseif op == ">" then
+    return a > b
+  elseif op == "<=" then
+    return a <= b
+  elseif op == ">=" then
+    return a >= b
+  else
+    return a == b
+  end
+end
+
+local function AvgItemLevelPatternCheck(details, text)
+  if GetItemLevel(details) == false then
+    return false
+  end
+
+  local op1, op2, diff = text:match("^([><]?=?)avgilvl([+-]?)(%d*)$")
+  local avgIlvl = floor(GetAverageItemLevel() + 0.5)
+
+  if tonumber(diff) then
+    avgIlvl = avgIlvl + tonumber(diff) * (op2 == "-" and -1 or 1)
+  end
+
+  return CompareWithOperator(op1, details.itemLevel, avgIlvl)
+end
+
+local inventorySlotIlvl = {}
+
+local function UpdateInventorySlotIlvl(cachedItems)
+  if not cachedItems then return end
+
+  for _,details in pairs(Syndicator.Search.GetBaseInfoFromList(cachedItems)) do
+    GetInvType(details)
+
+    local slot = inventorySlots[details.invType]
+
+    if slot and GetItemLevel(details) ~= false and details.itemLevel then
+      inventorySlotIlvl[slot] = max(inventorySlotIlvl[slot] or 0, details.itemLevel)
+    end
+  end
+end
+
+Syndicator.CallbackRegistry:RegisterCallback("BagCacheUpdate", function (_, character, data)
+  for _,key in pairs({ "bags", "bank" }) do
+    local inventory = SYNDICATOR_DATA.Characters[character][key]
+    for index in pairs(data[key]) do UpdateInventorySlotIlvl(inventory[index + 1]) end
+  end
+end)
+
+Syndicator.CallbackRegistry:RegisterCallback("EquippedCacheUpdate", function(_, character)
+  UpdateInventorySlotIlvl(SYNDICATOR_DATA.Characters[character].equipped)
+end)
+
+local function SlotItemLevelPatternCheck(details, text)
+  GetInvType(details)
+
+  if details.invType == "NONE" or GetItemLevel(details) == false then
+    return false
+  end
+
+  local op1, op2, diff = text:match("^([><]?=?)slotilvl([+-]?)(%d*)$")
+  local slotilvl = inventorySlotIlvl[inventorySlots[details.invType]]
+
+  if not slotilvl then
+    return false
+  end
+
+  if tonumber(diff) then
+    slotilvl = slotilvl + tonumber(diff) * (op2 == "-" and -1 or 1)
+  end
+
+  return CompareWithOperator(op1, details.itemLevel, slotilvl)
+end
+
 local function GetAuctionValue(details)
   if details.auctionValue then
     return details.auctionValue >= 0
@@ -1688,6 +1765,8 @@ end
 local patterns = {
   ["^[><=]?%d+$"] = ItemLevelPatternCheck,
   ["^%d+%-%d+$"] = ItemLevelRangePatternCheck,
+  ["^[><]?=?avgilvl[+-]?%d*$"] = AvgItemLevelPatternCheck,
+  ["^[><]?=?slotilvl[+-]?%d*$"] = SlotItemLevelPatternCheck,
 
   ["^[><=]?%d+[gsc]$"] = AHValuePatternCheck,
   ["^%d+[gsc]%-%d+[gsc]$"] = AHValueRangePatternCheck,
