@@ -209,6 +209,7 @@ local raceCorrections = {
   ["highmountaintauren"] = "highmountain",
   ["lightforgeddraenei"] = "lightforged",
   ["earthendwarf"] = "earthen",
+  ["harronir"] = "haranir"
 }
 local prefix
 if addonTable.Constants.IsRetail then
