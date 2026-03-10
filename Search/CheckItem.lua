@@ -1676,6 +1676,36 @@ local function AHValuePatternCheck(details, text)
   end
 end
 
+local function GetTSMGroup(details)
+  if details.TSMGroup ~= nil then
+    return details.TSMGroup ~= false
+  end
+
+  if not TSM_API then
+    details.TSMGroup = false
+    return false
+  end
+  -- Needed?
+  if not C_Item.IsItemDataCachedByID(details.itemID) then
+    C_Item.RequestLoadItemDataByID(details.itemID)
+    return
+  end
+
+  local tsmItemString = TSM_API.ToItemString(details.itemLink)
+  -- Ungrouped items return nil, invalid item strings raise an error.
+  local group = tsmItemString and TSM_API.GetGroupPathByItem(tsmItemString)
+  details.TSMGroup = group and group:lower() or false
+  return details.TSMGroup ~= false
+end
+
+local function TSMGroupCheck(details, text)
+  local searchStr = text:sub(5):gsub("->", "`")
+  if GetTSMGroup(details) and details.TSMGroup:find(searchStr, nil, true) then
+    return true
+  end
+  return false
+end
+
 local function ExactKeywordCheck(details, text)
   local keyword = text:match("^#(.*)$")
   if KEYWORDS_TO_CHECK[keyword] ~= nil then
@@ -1693,6 +1723,7 @@ local patterns = {
   ["^%d+[gsc]%-%d+[gsc]$"] = AHValueRangePatternCheck,
 
   ["^%#.*$"] = ExactKeywordCheck,
+  ["^tsm:.*$"] = TSMGroupCheck,
 }
 
 -- Used to prevent equipment and use returning results based on partial words in
