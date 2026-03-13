@@ -108,12 +108,22 @@ function addonTable.SlashCmd.Timers()
   addonTable.Utilities.Message("Performance timers: " .. (addonTable.Config.Get(addonTable.Config.Options.DEBUG_TIMERS) and "Enabled" or "Disabled"))
 end
 
+function addonTable.SlashCmd.Version()
+  addonTable.Utilities.Message(
+    BLUE_FONT_COLOR:WrapTextInColorCode("Version: ") .. C_AddOns.GetAddOnMetadata("Syndicator", "Version") ..
+    LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(", " .. date() .. ", ") ..
+    BLUE_FONT_COLOR:WrapTextInColorCode("WoW: ") .. select(4, GetBuildInfo())
+  )
+end
+
 function addonTable.SlashCmd.CustomiseUI()
   addonTable.CallbackRegistry:TriggerEvent("ShowCustomise")
 end
 
 local COMMANDS = {
   [""] = function() Settings.OpenToCategory(Syndicator.OptionsCategory:GetID()) end,
+  ["v"] = addonTable.SlashCmd.Version,
+  ["version"] = addonTable.SlashCmd.Version,
   ["c"] = addonTable.SlashCmd.Config,
   ["config"] = addonTable.SlashCmd.Config,
   ["d"] = addonTable.SlashCmd.Debug,
