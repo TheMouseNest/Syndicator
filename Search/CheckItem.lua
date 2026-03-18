@@ -677,6 +677,8 @@ local function UsableCheck(details)
   end
 end
 
+local UPGRADE_PATH_PATTERN = ITEM_UPGRADE_TOOLTIP_FORMAT_STRING and "^" .. ITEM_UPGRADE_TOOLTIP_FORMAT_STRING:gsub("%%s", ".*"):gsub("%%d", ".*")
+
 local function ActiveSeasonCheck(details)
   if not C_Item.IsItemDataCachedByID(details.itemID) then
     C_Item.RequestLoadItemDataByID(details.itemID)
@@ -693,14 +695,16 @@ local function ActiveSeasonCheck(details)
   GetTooltipInfoSpell(details)
 
   if details.tooltipInfoSpell then
+    local seen = false
     for index = 1, math.min(#details.tooltipInfoSpell.lines, 4) do
       local row = details.tooltipInfoSpell.lines[index]
       local r, g, b = math.floor(row.leftColor.r * 100), math.floor(row.leftColor.g * 100), math.floor(row.leftColor.b * 100)
       if r == g and g == b and r < 60 then
         return false
       end
+      seen = seen or row.leftText:match(UPGRADE_PATH_PATTERN) ~= nil
     end
-    return true
+    return seen
   end
 end
 
@@ -1704,7 +1708,6 @@ local EXCLUSIVE_KEYWORDS_NO_TOOLTIP_TEXT = {
   [SYNDICATOR_LOCALES.enUS["KEYWORD_EQUIPMENT"]] = true,
 }
 
-local UPGRADE_PATH_PATTERN = ITEM_UPGRADE_TOOLTIP_FORMAT_STRING and "^" .. ITEM_UPGRADE_TOOLTIP_FORMAT_STRING:gsub("%%s", ".*"):gsub("%%d", ".*")
 local REQUIRES_PATTERN = ITEM_REQ_SKILL:gsub("%s", "(.*)")
 
 local function GetTooltipSpecialTerms(details)
