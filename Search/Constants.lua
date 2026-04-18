@@ -137,6 +137,14 @@ local ClassData = {
   }
 }
 
+if addonTable.Constants.IsRetail then
+  tAppendAll(ClassData[3], {
+    {2, 0}, -- One-Handed Axes
+    {2, 7}, -- One-Handed Swords
+    {2, 15}, -- Daggers
+  })
+end
+
 addonTable.Search.Constants.AllClassSpecializations = {}
 for classID in ipairs(ClassData) do
   local index = 1
