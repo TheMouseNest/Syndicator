@@ -15,4 +15,10 @@ addonTable.Utilities.OnAddonLoaded("Syndicator", function()
   addonTable.Tracking.Initialize()
 
   addonTable.Search.Initialize()
+
+  if table.freeze then
+    table.freeze(Syndicator.Search)
+    table.freeze(Syndicator.API)
+    table.freeze(Syndicator)
+  end
 end)
